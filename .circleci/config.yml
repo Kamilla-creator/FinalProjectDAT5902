@@ -1,0 +1,39 @@
+version: 2.1
+
+executors:
+  python-executor:
+    docker:
+      - image: circleci/python:3.8  
+    working_directory: ~/repo
+
+jobs:
+  install-dependencies:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt  # Assuming your requirements are listed in a requirements.txt
+
+  run-tests:
+    executor: python-executor
+    steps:
+      - checkout
+      - run:
+          name: Run the Python script
+          command: |
+            . venv/bin/activate
+            python main.py  # Run the main script you provided
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - install-dependencies
+      - run-tests:
+          requires:
+            - install-dependencies
